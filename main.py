@@ -1,4 +1,8 @@
 import cv2
+import time
+import argparse
+
+import numpy as np
 
 # Pretrained classes in the model
 classNames = {0: 'background',
@@ -33,10 +37,19 @@ image = cv2.imread("image.jpeg")
 
 image_height, image_width, _ = image.shape
 
-model.setInput(cv2.dnn.blobFromImage(image, size=(300, 300), swapRB=True))
-output = model.forward()
-# print(output[0,0,:,:].shape)
+t = np.array([])
+for i in range(1000):
+    t0 = time.time()
+    model.setInput(cv2.dnn.blobFromImage(image, size=(300, 300), swapRB=True))
+    output = model.forward()
+    dt = time.time() - t0
+    t = np.append(t, dt)
 
+print('Mean: ', np.mean(t))
+print('Std: ', np.std(t))
+print('Median: ', np.median(t))
+
+# print(output[0,0,:,:].shape)
 
 for detection in output[0, 0, :, :]:
     confidence = detection[2]
@@ -51,12 +64,8 @@ for detection in output[0, 0, :, :]:
         cv2.rectangle(image, (int(box_x), int(box_y)), (int(box_width), int(box_height)), (23, 230, 210), thickness=1)
         cv2.putText(image,class_name ,(int(box_x), int(box_y+.05*image_height)),cv2.FONT_HERSHEY_SIMPLEX,(.005*image_width),(0, 0, 255))
 
+# cv2.imshow('image', image)
+cv2.imwrite("image_box_text.jpg",image)
 
-
-
-
-cv2.imshow('image', image)
-# cv2.imwrite("image_box_text.jpg",image)
-
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()

@@ -1,5 +1,6 @@
 # Default ignored files
-/.idea/
+.idea/
+.vscode/
 
 # Project exclude paths
-/venv/
+venv/
